@@ -22,4 +22,27 @@ public:
 
 	virtual void Init() override;
 	
+	UFUNCTION(BlueprintCallable)
+	void StartMatching();
+
+	UFUNCTION(BlueprintCallable)
+	void CancelMatching();
+
+private:
+	IOnlineSubsystem* OnlineSubsystem;
+	IOnlineSessionPtr SessionInterface;
+
+	//Matchmaking Delegates
+	FOnMatchmakingCompleteDelegate MatchmakingCompleteDelegate;
+	FDelegateHandle MatchmakingCompleteDelegateHandle;
+
+	FOnDestroySessionCompleteDelegate DestroySessionCompleteDelegate;
+	FDelegateHandle DestroySessionCompleteDelegateHandle;
+
+	//Matchmaking Callbacks
+	void OnMatchmakingComplete(FName SessionName, bool bWasSuccessful);
+	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
+
+	//Utility Functions
+	void TransitionToGame(const FString& JoinURL);
 };
