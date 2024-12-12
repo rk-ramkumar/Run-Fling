@@ -23,10 +23,10 @@ public:
 	virtual void Init() override;
 	
 	UFUNCTION(BlueprintCallable)
-	void StartMatching();
+	void StartMatchmaking();
 
 	UFUNCTION(BlueprintCallable)
-	void CancelMatching();
+	void CancelMatchmaking();
 
 private:
 	IOnlineSubsystem* OnlineSubsystem;

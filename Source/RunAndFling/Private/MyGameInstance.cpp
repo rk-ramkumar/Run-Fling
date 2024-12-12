@@ -28,22 +28,54 @@ void UMyGameInstance::Init()
 	}
 }
 
-void UMyGameInstance::StartMatching()
+void UMyGameInstance::StartMatchmaking()
 {
+	if (SessionInterface.IsValid())
+	{
+		TArray<FUniqueNetIdRef> PlayerIds;
+
+		FName SessionName = FName(TEXT("MySession"));
+		FOnlineSessionSettings Settings;
+		TSharedRef<FOnlineSessionSearch> SearchParams = MakeShareable(new FOnlineSessionSearch());
+
+		SessionInterface->StartMatchmaking(PlayerIds, SessionName, Settings, SearchParams);
+	}
+	
 }
 
-void UMyGameInstance::CancelMatching()
+void UMyGameInstance::CancelMatchmaking()
 {
 }
 
 void UMyGameInstance::OnMatchmakingComplete(FName SessionName, bool bWasSuccessful)
 {
+	if (bWasSuccessful)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Matchmaking successful! Joining session."));
+		FString ConnectString;
+		if (SessionInterface->GetResolvedConnectString(SessionName, ConnectString))
+		{
+			TransitionToGame(ConnectString);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Matchmaking failed"));
+	}
 }
 
 void UMyGameInstance::OnDestroySessionComplete(FName SessionName, bool bWasSuccessful)
 {
+	if (bWasSuccessful)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Session destroyed successfully"));
+	}
 }
 
 void UMyGameInstance::TransitionToGame(const FString& JoinURL)
 {
+	if (APlayerController* PC = GetFirstLocalPlayerController())
+	{
+		PC->ClientTravel(JoinURL, ETravelType::TRAVEL_Absolute);
+	}
 }
